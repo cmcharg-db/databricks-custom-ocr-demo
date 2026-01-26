@@ -170,13 +170,17 @@ def generate_documents_batch(generator_func, output_dir, count, start_seed, doc_
     
     Args:
         generator_func: The generator function to call
-        output_dir: Directory to save PDFs
+        output_dir: Directory to save PDFs (Volume path)
         count: Number of documents to generate
         start_seed: Starting seed value
         doc_type_name: Name for display
     
     Returns:
         list: Generated document metadata
+    
+    Note:
+        Requires DBR 13.3+ for direct Volume path access.
+        Unity Catalog Volumes are mounted as POSIX paths.
     """
     print(f"\n{'='*70}")
     print(f"Generating {count} {doc_type_name}...")
@@ -187,18 +191,17 @@ def generate_documents_batch(generator_func, output_dir, count, start_seed, doc_
     for i in range(count):
         seed = start_seed + i
         filename = f"{doc_type_name.lower().replace(' ', '_')}_{i+1:03d}.pdf"
-        filepath = f"{output_dir}/{filename}"
-        local_filepath = filepath.replace("/Volumes/", "/dbfs/Volumes/")
+        volume_path = f"{output_dir}/{filename}"
         
         try:
-            # Call the SHARED generator function
-            params = generator_func(local_filepath, seed=seed)
+            # Call the SHARED generator function - writes directly to Volume
+            params = generator_func(volume_path, seed=seed)
             
             # Extract relevant metadata
             metadata = {
                 'type': doc_type_name.lower().replace(' ', '_'),
                 'filename': filename,
-                'path': filepath,
+                'path': volume_path,
                 'seed': seed
             }
             
@@ -273,9 +276,9 @@ if doc_type == 'all' or doc_type == 'financial_statements':
 
 # DBTITLE 1,Create Manifest File
 manifest_path = f"{output_dirs['base']}/manifest.txt"
-local_manifest = manifest_path.replace("/Volumes/", "/dbfs/Volumes/")
 
-with open(local_manifest, 'w') as f:
+# Write manifest directly to Volume path
+with open(manifest_path, 'w') as f:
     f.write("="*70 + "\n")
     f.write("SYNTHETIC DOCUMENT GENERATION MANIFEST\n")
     f.write("="*70 + "\n")

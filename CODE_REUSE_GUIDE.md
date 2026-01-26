@@ -36,6 +36,10 @@ python add_scan_effects.py      # Uses scan_effects.py
 - `01_generate_documents_modular.py` - Imports shared generators
 - `03_add_scan_effects.py` - Imports shared scan_effects
 
+**Requirements:** DBR 13.3+ for direct Volume path access (POSIX mounting).
+
+Files are written directly to `/Volumes/{catalog}/{schema}/{volume}/` paths.
+
 ## Code Reuse Benefits
 
 | Component | Shared? | Result |

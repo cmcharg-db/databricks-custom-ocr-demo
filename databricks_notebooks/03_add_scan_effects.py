@@ -188,30 +188,34 @@ for i, pdf_info in enumerate(selected_pdfs, 1):
     output_filename = f"scanned_{doc_quality}_{pdf_info['name']}"
     output_path = f"{scanned_dir}/{output_filename}"
     
-    # Convert to local paths for processing
-    input_local = pdf_info['path'].replace("dbfs:/", "/dbfs/")
-    output_local = output_path.replace("/Volumes/", "/dbfs/Volumes/")
+    # Get Volume paths (DBR 13.3+ mounts Volumes as POSIX paths)
+    input_path = pdf_info['path']
     
     print(f"\n[{i}/{len(selected_pdfs)}] Processing: {pdf_info['name']}")
     print(f"  Source: {pdf_info['subdir']}")
     print(f"  Quality: {doc_quality}")
     print(f"  Output: {output_filename}")
     
-    # Process the PDF
-    success = process_pdf(input_local, output_local, quality=doc_quality, dpi=dpi)
-    
-    if success:
-        processed_count += 1
-        # Get output file size
-        try:
-            output_files = dbutils.fs.ls(scanned_dir)
-            output_file = next((f for f in output_files if f.name == output_filename), None)
-            if output_file:
-                size_mb = output_file.size / (1024 * 1024)
-                print(f"  ✓ Success! Size: {size_mb:.2f} MB")
-        except:
-            print(f"  ✓ Success!")
-    else:
+    try:
+        # Process PDF directly using Volume paths
+        success = process_pdf(input_path, output_path, quality=doc_quality, dpi=dpi)
+        
+        if success:
+            processed_count += 1
+            # Get output file size
+            try:
+                output_files = dbutils.fs.ls(scanned_dir)
+                output_file = next((f for f in output_files if f.name == output_filename), None)
+                if output_file:
+                    size_mb = output_file.size / (1024 * 1024)
+                    print(f"  ✓ Success! Size: {size_mb:.2f} MB")
+            except:
+                print(f"  ✓ Success!")
+        else:
+            failed_count += 1
+            
+    except Exception as e:
+        print(f"  ✗ Error: {e}")
         failed_count += 1
 
 # COMMAND ----------

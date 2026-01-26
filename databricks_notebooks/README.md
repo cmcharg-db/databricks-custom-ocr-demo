@@ -6,10 +6,12 @@ These notebooks use **shared modules** from `data_gen/` for maximum code reuse w
 
 ## Notebooks
 
-| Notebook | Purpose | Imports |
-|----------|---------|---------|
-| `01_generate_documents_modular.py` | Generate synthetic documents | `generators/`, `config.py` |
-| `03_add_scan_effects.py` | Add scan effects to PDFs | `scan_effects.py` |
+| Notebook | Purpose | Imports | Requirements |
+|----------|---------|---------|--------------|
+| `01_generate_documents_modular.py` | Generate synthetic documents | `generators/`, `config.py` | DBR 13.3+ |
+| `03_add_scan_effects.py` | Add scan effects to PDFs | `scan_effects.py` | DBR 13.3+ |
+
+**Note:** Requires DBR 13.3+ for direct Unity Catalog Volume path access (POSIX mounting).
 
 ## Setup
 
@@ -90,6 +92,8 @@ Set `module_path` widget to your uploaded folder location:
 - ✅ Edit shared modules → changes apply everywhere
 - ✅ Same seed produces identical documents
 - ✅ Consistent scan quality parameters
+- ✅ Direct Volume path access (no DBFS conversion needed)
+- ✅ Unity Catalog governance for all generated files
 
 ## Troubleshooting
 

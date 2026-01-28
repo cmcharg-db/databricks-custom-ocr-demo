@@ -124,9 +124,11 @@ def find_pdfs(base_path):
             files = dbutils.fs.ls(subdir_path)
             pdf_files = [f for f in files if f.name.endswith('.pdf')]
             for pdf_file in pdf_files:
+                # Convert dbfs:/Volumes/... to /Volumes/... for PyMuPDF
+                posix_path = pdf_file.path.replace('dbfs:', '')
                 pdfs.append({
                     'name': pdf_file.name,
-                    'path': pdf_file.path,
+                    'path': posix_path,
                     'size': pdf_file.size,
                     'subdir': subdir
                 })
@@ -187,7 +189,7 @@ for i, pdf_info in enumerate(selected_pdfs, 1):
     output_filename = f"scanned_{doc_quality}_{pdf_info['name']}"
     output_path = f"{scanned_dir}/{output_filename}"
     
-    # Get Volume paths (DBR 13.3+ mounts Volumes as POSIX paths)
+    # Use direct Volume path (already converted from dbfs: format)
     input_path = pdf_info['path']
     
     print(f"\n[{i}/{len(selected_pdfs)}] Processing: {pdf_info['name']}")

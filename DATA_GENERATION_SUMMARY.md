@@ -63,9 +63,6 @@ data_gen/
 ```bash
 cd data_gen
 pip install -r requirements.txt
-
-# macOS only (for scan effects):
-brew install poppler
 ```
 
 ### Step 2: Test Setup
@@ -218,7 +215,7 @@ Diagnostic script that:
 - **Pillow**: Image manipulation for scan effects
 - **numpy**: Numerical operations for noise/effects
 - **Faker**: Realistic fake data generation
-- **pdf2image**: Convert PDFs to images (requires poppler)
+- **PyMuPDF**: Convert PDFs to images (no system dependencies!)
 - **PyPDF2**: PDF reading and manipulation
 
 ### Output Formats
@@ -280,13 +277,9 @@ Start with synthetic data for pipeline development, then validate with small set
 pip install -r requirements.txt
 ```
 
-### "PDFInfoNotInstalledError"
+### "ModuleNotFoundError: No module named 'fitz'"
 ```bash
-# macOS
-brew install poppler
-
-# Ubuntu/Debian
-sudo apt-get install poppler-utils
+pip install PyMuPDF
 ```
 
 ### Documents look too similar

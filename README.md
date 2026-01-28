@@ -49,9 +49,6 @@ cd data_gen
 # Install dependencies
 pip install -r requirements.txt
 
-# Install poppler (macOS, for scan effects)
-brew install poppler
-
 # Test your setup
 python test_setup.py
 
@@ -242,7 +239,6 @@ flowchart TB
 ### For Document Generation
 - Python 3.8+
 - pip package manager
-- (Optional) poppler for scan effects
 
 ### For Databricks Deployment
 - Databricks workspace with Unity Catalog

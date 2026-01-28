@@ -48,13 +48,10 @@ CREATE VOLUME IF NOT EXISTS lending_documents.raw_data.synthetic_docs;
 
 In cluster or notebook:
 ```python
-%pip install reportlab==4.0.9 Faker==22.6.0 pandas==2.2.0 Pillow==10.2.0 numpy==1.26.3 pdf2image==1.17.0
+%pip install reportlab==4.0.9 Faker==22.6.0 pandas==2.2.0 Pillow==10.2.0 numpy==1.26.3 PyMuPDF==1.23.26
 ```
 
-For scan effects, also install poppler:
-```bash
-%sh apt-get update && apt-get install -y poppler-utils
-```
+**Note:** PyMuPDF requires no system dependencies - works on all Databricks compute types including serverless!
 
 ### 4. Configure Notebooks
 

@@ -130,7 +130,7 @@ flowchart TB
 - Create Databricks workspace with Unity Catalog enabled
 - Set up GPU-enabled cluster (A100 or V100 recommended for DeepSeek OCR)
 - Configure cloud storage (AWS S3/Azure ADLS) for document landing zone
-- Install required libraries: `transformers`, `torch`, `pillow`, `pdf2image`, `mlflow`
+- Install required libraries: `transformers`, `torch`, `pillow`, `PyMuPDF`, `mlflow`
 
 **1.2 Unity Catalog Setup**
 

@@ -19,17 +19,8 @@ This will install:
 - `reportlab` - PDF generation
 - `Pillow` - Image manipulation
 - `Faker` - Fake data generation
+- `PyMuPDF` - PDF processing (no system dependencies!)
 - Other supporting libraries
-
-**Note:** On macOS, you may also need to install poppler for PDF processing:
-```bash
-brew install poppler
-```
-
-On Ubuntu/Debian:
-```bash
-sudo apt-get install poppler-utils
-```
 
 ## Step 2: Generate Documents
 
@@ -182,10 +173,8 @@ databricks fs cp -r outputs/scanned/ dbfs:/FileStore/lending_documents/scanned/
 ### "ModuleNotFoundError: No module named 'reportlab'"
 Run: `pip install -r requirements.txt`
 
-### "pdf2image.exceptions.PDFPageCountError"
-Install poppler:
-- macOS: `brew install poppler`
-- Ubuntu: `sudo apt-get install poppler-utils`
+### "ModuleNotFoundError: No module named 'fitz'"
+Install PyMuPDF: `pip install PyMuPDF`
 
 ### "Permission denied" when running scripts
 Make scripts executable:

@@ -16,7 +16,7 @@ Functions:
 import random
 from PIL import Image, ImageFilter, ImageEnhance
 import numpy as np
-from pdf2image import convert_from_path
+import fitz  # PyMuPDF
 
 
 # ==============================================================================
@@ -161,6 +161,7 @@ def process_pdf(input_path, output_path, quality='light', dpi=150):
     Convert PDF to images, apply scan effects, and save as new PDF.
     
     This is the main function for processing entire PDF documents.
+    Uses PyMuPDF (fitz) - no system dependencies required!
     
     Args:
         input_path: Path to input PDF (local filesystem path)
@@ -175,14 +176,29 @@ def process_pdf(input_path, output_path, quality='light', dpi=150):
         Exception: If PDF processing fails
     """
     try:
-        # Convert PDF to images at specified DPI
-        images = convert_from_path(input_path, dpi=dpi)
+        # Open PDF with PyMuPDF
+        pdf_document = fitz.open(input_path)
         
-        # Apply effects to each page
+        # Calculate zoom factor for desired DPI (72 is default)
+        zoom = dpi / 72
+        mat = fitz.Matrix(zoom, zoom)
+        
+        # Process each page
         processed_images = []
-        for image in images:
-            processed = apply_scan_effects(image, quality=quality)
+        for page_num in range(len(pdf_document)):
+            # Get page and render to pixmap
+            page = pdf_document[page_num]
+            pix = page.get_pixmap(matrix=mat)
+            
+            # Convert pixmap to PIL Image
+            img = Image.frombytes("RGB", [pix.width, pix.height], pix.samples)
+            
+            # Apply scan effects
+            processed = apply_scan_effects(img, quality=quality)
             processed_images.append(processed)
+        
+        # Close PDF document
+        pdf_document.close()
         
         # Save as new PDF
         if processed_images:

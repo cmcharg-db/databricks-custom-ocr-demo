@@ -19,10 +19,9 @@
 # COMMAND ----------
 
 # DBTITLE 1,Install Image Processing Libraries
-%pip install Pillow==10.2.0 numpy==1.26.3 pdf2image==1.17.0 PyPDF2==3.0.1 --quiet
+%pip install Pillow==10.2.0 numpy==1.26.3 PyMuPDF==1.23.26 PyPDF2==3.0.1 --quiet
 
-# Note: pdf2image requires poppler. On Databricks, install via:
-# %sh apt-get update && apt-get install -y poppler-utils
+# Note: PyMuPDF requires no system dependencies - works on all compute types!
 
 dbutils.library.restartPython()
 

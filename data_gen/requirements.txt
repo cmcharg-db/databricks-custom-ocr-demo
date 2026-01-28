@@ -5,7 +5,7 @@ PyPDF2==3.0.1
 # Image manipulation for scan effects
 Pillow==10.2.0
 numpy==1.26.3
-pdf2image==1.17.0
+PyMuPDF==1.23.26
 
 # Fake data generation
 Faker==22.6.0
@@ -19,6 +19,4 @@ pandas==2.2.0
 # Optional: For advanced PDF manipulation
 pypdf==4.0.1
 
-# Note: pdf2image requires poppler (system package)
-# macOS: brew install poppler
-# Ubuntu: sudo apt-get install poppler-utils
+# Note: PyMuPDF (fitz) requires no system dependencies - works everywhere!

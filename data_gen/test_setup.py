@@ -20,7 +20,7 @@ def test_imports():
         'PIL': 'Pillow',
         'numpy': 'numpy',
         'faker': 'Faker',
-        'pdf2image': 'pdf2image (requires poppler)',
+        'fitz': 'PyMuPDF',
         'PyPDF2': 'PyPDF2',
     }
     
@@ -98,13 +98,12 @@ def test_generators():
     return True
 
 
-def test_pdf2image():
-    """Test pdf2image and poppler installation."""
-    print("\nTesting PDF to image conversion (requires poppler)...")
+def test_pymupdf():
+    """Test PyMuPDF installation."""
+    print("\nTesting PDF to image conversion with PyMuPDF...")
     
     try:
-        from pdf2image import convert_from_path
-        from pdf2image.exceptions import PDFInfoNotInstalledError
+        import fitz
         
         test_pdf = Path(__file__).parent / "outputs" / "test" / "test_loan.pdf"
         
@@ -113,16 +112,16 @@ def test_pdf2image():
             return True
         
         try:
-            # Try to convert just the first page
-            images = convert_from_path(str(test_pdf), first_page=1, last_page=1, dpi=72)
+            # Try to open and render just the first page
+            doc = fitz.open(str(test_pdf))
+            page = doc[0]
+            pix = page.get_pixmap()
             print(f"  ✓ PDF to image conversion working")
-            print(f"    Converted page size: {images[0].size}")
+            print(f"    Converted page size: {pix.width}x{pix.height}")
+            doc.close()
             return True
-        except PDFInfoNotInstalledError:
-            print("  ✗ Poppler not installed")
-            print("    Install poppler:")
-            print("      macOS: brew install poppler")
-            print("      Ubuntu: sudo apt-get install poppler-utils")
+        except Exception as e:
+            print(f"  ✗ Error converting PDF: {e}")
             return False
             
     except Exception as e:
@@ -146,7 +145,7 @@ def main():
     results.append(("Document Generators", test_generators()))
     
     # Test PDF conversion
-    results.append(("PDF to Image (Optional)", test_pdf2image()))
+    results.append(("PDF to Image (PyMuPDF)", test_pymupdf()))
     
     # Summary
     print("\n" + "="*70)
@@ -173,7 +172,6 @@ def main():
         print("\n✗ Setup has issues - please fix errors above")
         print("\nCommon fixes:")
         print("  • Install missing packages: pip install -r requirements.txt")
-        print("  • Install poppler: brew install poppler (macOS)")
         print("\n")
         return 1
 

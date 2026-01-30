@@ -1,15 +1,15 @@
 # Databricks notebook source
 # MAGIC %md
 # MAGIC # DeepSeek-OCR Model Setup & Testing
-# MAGIC 
+# MAGIC
 # MAGIC This notebook sets up the DeepSeek-OCR model for document text extraction.
-# MAGIC 
+# MAGIC
 # MAGIC **What this notebook does:**
 # MAGIC 1. Installs DeepSeek-OCR dependencies (transformers, flash-attention, torch)
 # MAGIC 2. Downloads the model from Hugging Face
 # MAGIC 3. Tests OCR on sample synthetic documents from Unity Catalog Volumes
 # MAGIC 4. Packages model as MLflow artifact for deployment
-# MAGIC 
+# MAGIC
 # MAGIC **Requirements:**
 # MAGIC - GPU-enabled cluster (A10, A100, or V100 recommended)
 # MAGIC - Databricks Runtime 13.3+ ML
@@ -44,6 +44,8 @@
 %pip install PyMuPDF==1.23.26 Pillow==10.2.0 --quiet
 
 # Note: Flash attention will be installed separately due to compilation requirements
+
+%pip install hf_transfer
 
 # COMMAND ----------
 
@@ -657,15 +659,15 @@ print("\n✅ Model setup complete!")
 
 # MAGIC %md
 # MAGIC ## 9. Next Steps
-# MAGIC 
+# MAGIC
 # MAGIC **Model is now ready!** ✅
-# MAGIC 
+# MAGIC
 # MAGIC Next steps:
 # MAGIC 1. **Bronze → Silver Pipeline**: Process all documents in Unity Catalog Volume
 # MAGIC 2. **Silver → Gold Pipeline**: Extract structured fields from OCR text
 # MAGIC 3. **Model Serving**: Deploy as REST API endpoint (optional)
 # MAGIC 4. **Orchestration**: Create Databricks Workflow for automated processing
-# MAGIC 
+# MAGIC
 # MAGIC **Performance Notes:**
 # MAGIC - Current configuration: `{model_size}` mode
 # MAGIC - To improve speed: Switch to "tiny" or "small" mode

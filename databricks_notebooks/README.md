@@ -10,8 +10,10 @@ These notebooks use **shared modules** from `data_gen/` for maximum code reuse w
 |----------|---------|---------|--------------|
 | `01_generate_documents_modular.py` | Generate synthetic documents | `generators/`, `config.py` | DBR 13.3+ |
 | `03_add_scan_effects.py` | Add scan effects to PDFs | `scan_effects.py` | DBR 13.3+ |
+| `04_setup_deepseek_ocr.py` | Setup DeepSeek-OCR model & test | None (standalone) | DBR 13.3+ ML, GPU cluster |
 
 **Note:** Requires DBR 13.3+ for direct Unity Catalog Volume path access (POSIX mounting).
+**GPU Requirements:** Notebook 04 requires GPU-enabled cluster (A10, A100, or V100) with ~15GB GPU memory.
 
 ## Setup
 
@@ -82,6 +84,28 @@ Set `module_path` widget to your uploaded folder location:
 3. Run all cells
 
 **Output:** Scanned PDFs in `scanned/` subdirectory
+
+### Setup DeepSeek-OCR Model
+
+1. Import `04_setup_deepseek_ocr.py`
+2. **Ensure GPU-enabled cluster** (A10/A100/V100)
+3. Configure widgets:
+   - Volume paths (where test documents are)
+   - Model size (tiny/small/base/large/gundam)
+   - Test document type
+4. Run all cells (first run takes 5-10 minutes to download model)
+
+**Output:** 
+- DeepSeek-OCR model loaded and tested
+- MLflow model artifact logged
+- OCR results from test document displayed
+
+**Model Size Guide:**
+- **tiny** (512px): Fastest, lowest quality
+- **small** (640px): Fast, decent quality
+- **base** (1024px): Balanced (good default)
+- **large** (1280px): Slower, high quality
+- **gundam** (1024/640 crop): Best for multi-page complex docs ⭐ **Recommended**
 
 ## Benefits
 

@@ -130,6 +130,11 @@ import fitz  # PyMuPDF for PDF to image conversion
 from PIL import Image  # Python Imaging Library for image processing
 import os  # File system operations
 from datetime import datetime  # Timestamp tracking for performance metrics
+import warnings  # For suppressing non-critical warnings
+
+# Suppress common transformers warnings that don't affect functionality
+warnings.filterwarnings('ignore', message='.*attention_mask.*')
+warnings.filterwarnings('ignore', message='.*pad_token_id.*')
 
 # Verify GPU environment
 # DeepSeek-OCR requires GPU for reasonable performance
@@ -178,6 +183,13 @@ model = AutoModel.from_pretrained(
 model = model.eval().cuda().to(torch.bfloat16)
 print("✓ Model loaded and ready on GPU")
 print(f"  Model parameters: {sum(p.numel() for p in model.parameters()) / 1e9:.2f}B")
+
+# Quick sanity check - verify the model has an infer method
+if hasattr(model, 'infer'):
+    print("✓ Model has 'infer' method")
+else:
+    print("⚠️ WARNING: Model does not have 'infer' method!")
+    print(f"  Available methods: {[m for m in dir(model) if not m.startswith('_')][:10]}")
 
 # COMMAND ----------
 
@@ -346,6 +358,8 @@ def process_document(pdf_path, output_mode="markdown"):
             else:
                 # Run DeepSeek-OCR inference
                 # This is the core OCR step where the model "reads" the image
+                print(f"    Running inference with prompt: {prompt[:50]}...")
+                
                 res = model.infer(
                     tokenizer,                      # Text tokenizer for encoding/decoding
                     prompt=prompt,                  # Instruction prompt for the model
@@ -357,6 +371,14 @@ def process_document(pdf_path, output_mode="markdown"):
                     test_compress=True,             # Enable context compression
                     save_results=False              # Don't save intermediate outputs
                 )
+                
+                # Debug: Show what was returned
+                print(f"    Inference returned type: {type(res)}")
+                if res:
+                    print(f"    Inference returned length: {len(res)} chars")
+                    print(f"    First 100 chars: {res[:100] if len(res) > 100 else res}")
+                else:
+                    print(f"    Inference returned: {repr(res)}")
                 
                 # Check if inference returned valid results
                 if res is None or res == '':

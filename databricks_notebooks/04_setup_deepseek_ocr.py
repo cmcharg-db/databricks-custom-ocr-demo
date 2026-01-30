@@ -23,11 +23,14 @@
 # COMMAND ----------
 
 # DBTITLE 1,Install Core Dependencies
-# Install PyTorch and transformers
+# Install PyTorch and related libraries with compatible versions
 # - torch: Deep learning framework required for model inference
+# - torchvision: Vision library (must match torch version to avoid conflicts)
 # - transformers: Hugging Face library for loading pre-trained models
 # - tokenizers: Fast tokenization for text processing
-%pip install torch==2.6.0 --quiet
+# 
+# IMPORTANT: Install torch and torchvision together to ensure compatibility
+%pip install torch==2.5.1 torchvision==0.20.1 --quiet
 %pip install transformers==4.46.3 tokenizers==0.20.3 --quiet
 
 # Install utility libraries

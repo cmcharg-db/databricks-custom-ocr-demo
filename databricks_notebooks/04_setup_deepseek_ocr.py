@@ -286,6 +286,15 @@ def pdf_to_images(pdf_path, output_dir="/tmp/pdf_pages"):
     # Clean up PDF document handle
     doc.close()
     
+    # Verify images were created successfully
+    print(f"  ✓ Converted {len(image_paths)} pages to images")
+    for idx, img_path in enumerate(image_paths, 1):
+        if os.path.exists(img_path):
+            size = os.path.getsize(img_path) / 1024  # KB
+            print(f"    Page {idx}: {size:.1f} KB")
+        else:
+            print(f"    ⚠️ Page {idx}: Image file not created!")
+    
     return image_paths
 
 
@@ -329,19 +338,34 @@ def process_document(pdf_path, output_mode="markdown"):
         # Track processing time for performance metrics
         start_time = datetime.now()
         
-        # Run DeepSeek-OCR inference
-        # This is the core OCR step where the model "reads" the image
-        res = model.infer(
-            tokenizer,                      # Text tokenizer for encoding/decoding
-            prompt=prompt,                  # Instruction prompt for the model
-            image_file=image_path,          # Input image to process
-            output_path='/tmp/ocr_output',  # Temp directory for intermediate files
-            base_size=config['base_size'],  # Image preprocessing size
-            image_size=config['image_size'], # Model input size
-            crop_mode=config['crop_mode'],  # Enable intelligent cropping if True
-            test_compress=True,             # Enable context compression
-            save_results=False              # Don't save intermediate outputs
-        )
+        try:
+            # Verify image exists before processing
+            if not os.path.exists(image_path):
+                print(f"    ⚠️ Warning: Image not found at {image_path}")
+                res = None
+            else:
+                # Run DeepSeek-OCR inference
+                # This is the core OCR step where the model "reads" the image
+                res = model.infer(
+                    tokenizer,                      # Text tokenizer for encoding/decoding
+                    prompt=prompt,                  # Instruction prompt for the model
+                    image_file=image_path,          # Input image to process
+                    output_path='/tmp/ocr_output',  # Temp directory for intermediate files
+                    base_size=config['base_size'],  # Image preprocessing size
+                    image_size=config['image_size'], # Model input size
+                    crop_mode=config['crop_mode'],  # Enable intelligent cropping if True
+                    test_compress=True,             # Enable context compression
+                    save_results=False              # Don't save intermediate outputs
+                )
+                
+                # Check if inference returned valid results
+                if res is None or res == '':
+                    print(f"    ⚠️ Warning: Model returned empty result for page {i}")
+                    res = "[OCR returned no text]"
+                    
+        except Exception as e:
+            print(f"    ✗ Error processing page {i}: {e}")
+            res = f"[Error: {str(e)}]"
         
         # Calculate processing time
         end_time = datetime.now()
@@ -350,7 +374,7 @@ def process_document(pdf_path, output_mode="markdown"):
         # Store results for this page
         results.append({
             'page': i,
-            'text': res,  # Extracted text (plain or markdown)
+            'text': res if res else "[No text extracted]",  # Ensure text is never None
             'processing_time_seconds': processing_time,
             'image_path': image_path
         })
@@ -451,7 +475,14 @@ except Exception as e:
 # We'll process the selected test document and display results
 
 print(f"\n🚀 Processing document with DeepSeek-OCR ({model_size} mode)...")
-print(f"Document: {test_file.name}\n")
+print(f"Document: {test_file.name}")
+print(f"\n🔍 Debug Information:")
+print(f"  Model loaded: {model is not None}")
+print(f"  Tokenizer loaded: {tokenizer is not None}")
+print(f"  Model device: {next(model.parameters()).device if model else 'N/A'}")
+print(f"  Model dtype: {next(model.parameters()).dtype if model else 'N/A'}")
+print(f"  PDF path: {test_file_path}")
+print(f"  Config: base_size={config['base_size']}, image_size={config['image_size']}, crop_mode={config['crop_mode']}\n")
 
 try:
     # Process the document with DeepSeek-OCR
